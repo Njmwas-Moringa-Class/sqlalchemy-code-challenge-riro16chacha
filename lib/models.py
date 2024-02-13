@@ -25,6 +25,15 @@ class Review(Base):
     restaurant = relationship("Restaurant", back_populates="reviews")
     customer = relationship("Customer", back_populates="reviews")
 
+    def customer(self):
+        # Return the Customer instance for this review
+        return self.customer
+
+    def restaurant(self):
+        # Return the Restaurant instance for this review
+        return self.restaurant
+
+
     def __repr__(self):
         return f'Review for {self.restaurant.name} by {self.customer.full_name()}: {self.star_rating} stars.'
 
@@ -37,6 +46,15 @@ class Restaurant(Base):
     price = Column(Integer)
 
     reviews = relationship("Review", back_populates="restaurant")
+
+    def reviews(self):
+        # Return a collection of all the reviews for the Restaurant
+        return self.reviews
+
+    def customers(self):
+        # Return a collection of all the customers who reviewed the Restaurant
+        return [review.customer for review in self.reviews]
+
 
     def __repr__(self):
         return f'Restaurant: {self.name}'
@@ -65,7 +83,17 @@ class Customer(Base):
     def __repr__(self):
         return f'Customer: {self.first_name} {self.last_name}'
     
+    def reviews(self):
+        # Return a collection of all the reviews that the Customer has left
+        return self.reviews
+
+    def restaurants(self):
+        # Return a collection of all the restaurants that the Customer has reviewed
+        return [review.restaurant for review in self.reviews]
+
+    
     def favorite_restaurant(self):
+         # Return the favorite restaurant of the customer based on their reviews
         session = Session()
         favorite_review = session.query(Review).filter_by(customer_id=self.id).order_by(Review.star_rating.desc()).first()
         if favorite_review:
@@ -74,12 +102,14 @@ class Customer(Base):
             return None
 
     def add_review(self, restaurant, rating):
+        # Add a new review for the customer
         new_review = Review(restaurant=restaurant, customer=self, star_rating=rating)
         session = Session()
         session.add(new_review)
         session.commit()
 
     def delete_reviews(self, restaurant):
+        # Delete all reviews of the customer for a given restaurant
         session = Session()
         session.query(Review).filter_by(customer_id=self.id, restaurant_id=restaurant.id).delete()
         session.commit()

@@ -2,45 +2,46 @@
 import random
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from lib.models import Review, Restaurant, Customer
-import ipdb
-from sqlalchemy.exc import OperationalError
+from lib.models import Restaurant, Customer, Review
+import ipdb;
+
 
 if __name__ == '__main__':
+    
+    engine = create_engine('sqlite:///db/restaurants.db')
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
     try:
-        # Corrected database path
-        engine = create_engine('sqlite:///db/restaurants.db')
-        Session = sessionmaker(bind=engine)
-        
-        # Ensuring session is scoped within a context manager
-        with Session() as session:
-            # Test Review object relationship methods
-            first_review = session.query(Review).first()
-            print("Review customer:", first_review.customer)
-            print("Review restaurant:", first_review.restaurant)
+        # Test relationships between models
+        # Query a restaurant and print its name
+        first_restaurant = session.query(Restaurant).first()
+        print("Restaurant Name:", first_restaurant.name)
 
-            # Test Restaurant object relationship methods
-            first_restaurant = session.query(Restaurant).first()
-            print("Restaurant reviews:")
-            for review in first_restaurant.reviews:
-                print(review)
-            print("Restaurant customers:")
-            for customer in first_restaurant.customers:
-                print(customer)
+        # Print reviews for the first restaurant
+        print("Reviews for Restaurant:")
+        for review in first_restaurant.reviews:
+            print(review)
 
-            # Test Customer object relationship methods
-            first_customer = session.query(Customer).first()
-            print("Customer reviews:")
-            for review in first_customer.reviews:
-                print(review)
-            print("Customer restaurants:")
-            for restaurant in first_customer.restaurants:
-                print(restaurant)  
+        # Query a customer and print their full name
+        first_customer = session.query(Customer).first()
+        print("Customer Name:", first_customer.full_name())
 
-            ipdb.set_trace()
+        # Print reviews given by the first customer
+        print("Reviews by Customer:")
+        for review in first_customer.reviews:
+            print(review)
 
-    except OperationalError as e:
-        print("An error occurred while connecting to the database:", e)
+        # Query a review and print its details along with related customer and restaurant
+        first_review = session.query(Review).first()
+        print("Review Star Rating:", first_review.star_rating)
+        print("Customer for Review:", first_review.customer.full_name())
+        print("Restaurant for Review:", first_review.restaurant.name)
 
     except Exception as e:
-        print("An unexpected error occurred:", e)
+        print("An error occurred:", e)
+    finally:
+        # Close the session
+        session.close()
+
+    ipdb.set_trace()
