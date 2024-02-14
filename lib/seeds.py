@@ -13,8 +13,8 @@ session = Session()
 
 # Add sample data
 # Create restaurants
-restaurant1 = Restaurant(name="Restaurant A", price=3)
-restaurant2 = Restaurant(name="Restaurant B", price=4)
+restaurant1 = Restaurant(name="Villa Rosa", price=125000)
+restaurant2 = Restaurant(name="Faremont", price=40000)
 session.add_all([restaurant1, restaurant2])
 session.commit()
 
