@@ -25,14 +25,13 @@ class Review(Base):
     restaurant = relationship("Restaurant", back_populates="reviews")
     customer = relationship("Customer", back_populates="reviews")
 
-    def customer(self):
+    def get_customer(self):
         # Return the Customer instance for this review
         return self.customer
 
-    def restaurant(self):
+    def get_restaurant(self):
         # Return the Restaurant instance for this review
         return self.restaurant
-
 
     def __repr__(self):
         return f'Review for {self.restaurant.name} by {self.customer.full_name()}: {self.star_rating} stars.'
@@ -47,7 +46,7 @@ class Restaurant(Base):
 
     reviews = relationship("Review", back_populates="restaurant")
 
-    def reviews(self):
+    def get_reviews(self):
         # Return a collection of all the reviews for the Restaurant
         return self.reviews
 
@@ -55,10 +54,9 @@ class Restaurant(Base):
         # Return a collection of all the customers who reviewed the Restaurant
         return [review.customer for review in self.reviews]
 
-
     def __repr__(self):
         return f'Restaurant: {self.name}'
-    
+
     @classmethod
     def fanciest(cls):
         session = Session()
@@ -83,7 +81,7 @@ class Customer(Base):
     def __repr__(self):
         return f'Customer: {self.first_name} {self.last_name}'
     
-    def reviews(self):
+    def get_reviews(self):
         # Return a collection of all the reviews that the Customer has left
         return self.reviews
 
@@ -91,7 +89,6 @@ class Customer(Base):
         # Return a collection of all the restaurants that the Customer has reviewed
         return [review.restaurant for review in self.reviews]
 
-    
     def favorite_restaurant(self):
          # Return the favorite restaurant of the customer based on their reviews
         session = Session()

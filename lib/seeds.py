@@ -1,11 +1,11 @@
 import random
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Restaurant, Customer, Review, Base
+from models import Restaurant, Customer, Review, Base, engine
 
 # Connect to the database
-engine = create_engine('sqlite:///db/restaurants.db')
-Base.metadata.create_all(engine)
+#engine = create_engine('sqlite:///db/restaurants.db')
+#Base.metadata.create_all(engine)
 
 # Create a session
 Session = sessionmaker(bind=engine)
@@ -33,7 +33,7 @@ session.commit()
 
 
 if __name__ == '__main__':
-    engine = create_engine('sqlite:///db/restaurants.db')
+    #engine = create_engine('sqlite:///db/restaurants.db')
     Session = sessionmaker(bind=engine)
     session = Session()
 
